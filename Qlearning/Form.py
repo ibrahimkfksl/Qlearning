@@ -1,6 +1,5 @@
 import PySimpleGUI as sg
   
-
 sg.theme('LightGrey 6')     
   
 layout = [
@@ -14,4 +13,3 @@ event, value = window.read()
 window.close()
 size = value[0]
 size = size.split(",") #matrix size as array
-

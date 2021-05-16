@@ -31,4 +31,3 @@ def drawGrid():
         for y in range(0, WINDOW_HEIGHT, blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(SCREEN, WHITE, rect, 1)
-main()
