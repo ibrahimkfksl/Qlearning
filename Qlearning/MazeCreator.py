@@ -3,8 +3,6 @@ import numpy as np
 import random
 
 class Maze:
-
-
     def __init__(self, maze_size):
         self.maze_size=int(maze_size)
         self.maze=np.zeros((maze_size,maze_size),dtype=float)
