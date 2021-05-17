@@ -1,33 +1,49 @@
 import pygame 
+import math
 
-pygame.init()
+class Matrix:
+    def __init__(self, X, Y, start, finish):
+        start = start.split(',')
+        finish = finish.split(',')
+        self.BLACK = (0, 0, 0)
+        self.WHITE = (200, 200, 200)
+        self.GREY = (212, 194, 193)
+        self.GREEN = (124,252,0)
+        self.RED = (220,20,60)
+        self.BLUE = (0,0,255)
+        self.WINDOW_HEIGHT = 800
+        self.WINDOW_WIDTH = 800
+        self.X = math.ceil(800/int(X))
+        self.Y = math.ceil(800/int(Y))
+        self.START_X = int(start[0])*(self.X)
+        self.START_Y = int(start[1])*(self.Y)
+        self.FINISH_X = int(finish[0])*(self.X)
+        self.FINISH_Y = int(finish[1])*(self.Y)
+        self.main()
 
-BLACK = (0, 0, 0)
-WHITE = (200, 200, 200)
-WINDOW_HEIGHT = 400
-WINDOW_WIDTH = 400
+    def main(self):
+        global SCREEN, CLOCK
+        pygame.init()
+        SCREEN = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
+        CLOCK = pygame.time.Clock()
+        SCREEN.fill(self.GREY)
+
+        while True:
+            self.drawGrid(SCREEN)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    #sys.exit()
+
+            pygame.display.update()
 
 
-def main():
-    global SCREEN, CLOCK
-    pygame.init()
-    SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    CLOCK = pygame.time.Clock()
-    SCREEN.fill(BLACK)
-
-    while True:
-        drawGrid()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        pygame.display.update()
-
-
-def drawGrid():
-    blockSize = 25 #Set the size of the grid block
-    for x in range(0, WINDOW_WIDTH, blockSize):
-        for y in range(0, WINDOW_HEIGHT, blockSize):
-            rect = pygame.Rect(x, y, blockSize, blockSize)
-            pygame.draw.rect(SCREEN, WHITE, rect, 1)
+    def drawGrid(self , SCREEN):
+        for x in range(0, self.WINDOW_WIDTH, (self.X)):
+            for y in range(0, self.WINDOW_HEIGHT, (self.Y)):
+                if(x == self.START_X and y == self.START_Y):
+                    pygame.draw.rect(SCREEN, self.GREEN, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
+                elif(x == self.FINISH_X and y == self.FINISH_Y):
+                     pygame.draw.rect(SCREEN, self.RED, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
+                else:
+                    pygame.draw.rect(SCREEN, self.BLACK, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
