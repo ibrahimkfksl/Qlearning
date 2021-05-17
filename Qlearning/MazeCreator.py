@@ -8,31 +8,36 @@ class Maze:
         self.maze=np.zeros((maze_size,maze_size),dtype=float)
         self.matrix_R=np.zeros((maze_size*maze_size,maze_size*maze_size),dtype=int)
 
-        #Maze e engel atamasi yapiyoruz
-        for i in range(self.maze_size):   
-          flag=0
-          block_sum=int((maze_size*30)/100)
-          for j in range(self.maze_size):
-              r=random.randint(-1,0)
-              if r==-1:
-                  if flag<=block_sum:
-                      self.maze[i][j]=-1
-                      flag=flag+1
-                  else:
-                      self.maze[i][j]=0
-              else:
-                  self.maze[i][j]=0
-
-              #Buradaki kod engelsiz bir maze olusturmak icin
-              #self.maze[i][j]=0
-        
+        for i in range(self.maze_size):
+            randomArray=self.randomIndex()
+            for j in range(0,len(randomArray)):
+                self.maze[i][randomArray[j]]=-1
         
         #Matris_R i olusturuyoruz
         for i in range(self.maze_size*self.maze_size):   
           for j in range(self.maze_size*self.maze_size):
             self.matrix_R[i][j]=-1
         
+    def randomIndex(self):
+        block_sum=int((self.maze_size*30)/100)
+        randomArray=[]
+        for i in range(0,block_sum):
+            flag=False
+            r=random.randint(0,self.maze_size-1)
+            for j in range(0,len(randomArray)):
+                if randomArray[j]==r:
+                    flag=True
+                    break
             
+            if flag==True:
+                i=i-1
+                continue
+            else:
+                randomArray.append(r)
+        
+        return randomArray
+
+    
     def printMaze(self):
         print(self.maze)
     
