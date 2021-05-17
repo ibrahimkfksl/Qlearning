@@ -33,8 +33,6 @@ class Matrix:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    #sys.exit()
-
             pygame.display.update()
 
 
@@ -43,7 +41,9 @@ class Matrix:
             for y in range(0, self.WINDOW_HEIGHT, (self.Y)):
                 if(x == self.START_X and y == self.START_Y):
                     pygame.draw.rect(SCREEN, self.GREEN, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
+                    pygame.display.flip()
                 elif(x == self.FINISH_X and y == self.FINISH_Y):
                      pygame.draw.rect(SCREEN, self.RED, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
+                     pygame.display.flip()
                 else:
                     pygame.draw.rect(SCREEN, self.BLACK, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
