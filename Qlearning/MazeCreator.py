@@ -55,7 +55,6 @@ class Maze:
               if self.maze[i][j]==-1 and i==j:
                   continue
 
-
                 #Sol Ust Kose
               if i==0 and j==0:
                 self.editMatrixR(i, j, i + 1, j)
@@ -129,7 +128,6 @@ class Maze:
         if self.maze[newRow][newColumn]==0:
             state_number=int(newRow*self.maze_size+newColumn)
             self.matrix_R[oldRow*self.maze_size+oldColumn][state_number]=0
-
 
 
     def addFinishState(self, state_number):

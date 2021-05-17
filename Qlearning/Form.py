@@ -28,6 +28,6 @@ value = form.FormPage()
 start = value[0]
 finish = value[1]
 size = value[2]
-size = size.split(",") #matrix size as array
+size = size.split(",")
 maze = Maze(int(size[0]))
 Matrix(size[0],size[0], start, finish, maze.getMaze())
