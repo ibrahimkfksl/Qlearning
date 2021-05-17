@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 from Matrix import Matrix
 from MazeCreator import Maze
 import numpy as np
+from main import RoadFind
 
 class Form:
     def FormPage(self):
@@ -28,6 +29,12 @@ value = form.FormPage()
 start = value[0]
 finish = value[1]
 size = value[2]
-size = size.split(",")
-maze = Maze(int(size[0]))
+size = size.split(",") #matrix size as array
+maze = Maze(int(size[0]),start,finish)
+
+matrixR=maze.getMatrixR()
+
+RoadFind(matrixR,maze.getFinishState(),iteration=100)
 Matrix(size[0],size[0], start, finish, maze.getMaze())
+
+

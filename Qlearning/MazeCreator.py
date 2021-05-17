@@ -3,20 +3,40 @@ import numpy as np
 import random
 
 class Maze:
-    def __init__(self, maze_size):
+    def __init__(self, maze_size,start,finish):
         self.maze_size=int(maze_size)
         self.maze=np.zeros((maze_size,maze_size),dtype=float)
         self.matrix_R=np.zeros((maze_size*maze_size,maze_size*maze_size),dtype=int)
+
+        start1 = start.split(",") #matrix size as array
+        finish1=finish.split(",")
+
+        startRow=int(start1[0])
+        startColumn=int(start1[1])
+        finishRow=int(finish1[0])
+        finishColumn=int(finish1[1])
+        self.startState=startRow*maze_size+startColumn
+        self.finishState=finishRow*maze_size+finishColumn
+        
 
         for i in range(self.maze_size):
             randomArray=self.randomIndex()
             for j in range(0,len(randomArray)):
                 self.maze[i][randomArray[j]]=-1
+
+        # Buradaki dögü kalkacak
+        for i in range(self.maze_size):
+            randomArray=self.randomIndex()
+            for j in range(self.maze_size):
+                self.maze[i][j]=0
         
         #Matris_R i olusturuyoruz
         for i in range(self.maze_size*self.maze_size):   
           for j in range(self.maze_size*self.maze_size):
             self.matrix_R[i][j]=-1
+        self.createRMatrix()
+        self.addFinishState(self.finishState)
+        #self.printMatrix_R()
         
     def randomIndex(self):
         block_sum=int((self.maze_size*30)/100)
@@ -51,7 +71,6 @@ class Maze:
         state_number=int
         for i in range(self.maze_size):   
           for j in range(self.maze_size):
-              print(i,"-",j)
               if self.maze[i][j]==-1 and i==j:
                   continue
 
@@ -137,6 +156,7 @@ class Maze:
         i=row
         j=column
 
+        self.matrix_R[state_number][state_number]=100
         #Sol Ust Kose
         if i==0 and j==0:
             self.editFinishState(i, j, i + 1, j)
@@ -208,9 +228,16 @@ class Maze:
     def editFinishState(self,oldRow,oldColumn,newRow,newColumn):
         if self.maze[newRow][newColumn]==0:
             state_number=int(newRow*self.maze_size+newColumn)
-            self.matrix_R[oldRow*self.maze_size+oldColumn][state_number]=100
+            self.matrix_R[state_number][oldRow*self.maze_size+oldColumn]=100
 
     def getMaze(self):
         return self.maze
     def getMatrixR(self):
         return self.matrix_R
+    def getFinishState(self):
+        return self.finishState
+    
+    def run(self):
+        print("Basladi")
+        
+    
