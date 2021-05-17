@@ -207,3 +207,7 @@ class Maze:
             state_number=int(newRow*self.maze_size+newColumn)
             self.matrix_R[oldRow*self.maze_size+oldColumn][state_number]=100
 
+    def getMaze(self):
+        return self.maze
+    def getMatrixR(self):
+        return self.matrix_R
