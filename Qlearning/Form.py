@@ -1,5 +1,7 @@
 import PySimpleGUI as sg
 from Matrix import Matrix
+from MazeCreator import Maze
+import numpy as np
 
 class Form:
     def FormPage(self):
@@ -9,6 +11,7 @@ class Form:
             [sg.Text('Start Location', size =(15, 1)), sg.InputText()],
             [sg.Text('Finish Location', size =(15, 1)), sg.InputText()],
             [sg.Text('Matrix Size', size =(15, 1)), sg.InputText()],
+
             [sg.Submit(), sg.Cancel()]
         ]
         
@@ -21,8 +24,10 @@ class Form:
 form = Form()
 value = form.FormPage()
 
+
 start = value[0]
 finish = value[1]
 size = value[2]
 size = size.split(",") #matrix size as array
-Matrix(size[0],size[1], start, finish)
+maze = Maze(int(size[0]))
+Matrix(size[0],size[0], start, finish, maze.getMaze())
