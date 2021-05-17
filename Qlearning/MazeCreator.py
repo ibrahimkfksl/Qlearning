@@ -3,8 +3,6 @@ import numpy as np
 import random
 
 class Maze:
-
-
     def __init__(self, maze_size):
         self.maze_size=int(maze_size)
         self.maze=np.zeros((maze_size,maze_size),dtype=float)
@@ -209,3 +207,7 @@ class Maze:
             state_number=int(newRow*self.maze_size+newColumn)
             self.matrix_R[oldRow*self.maze_size+oldColumn][state_number]=100
 
+    def getMaze(self):
+        return self.maze
+    def getMatrixR(self):
+        return self.matrix_R
