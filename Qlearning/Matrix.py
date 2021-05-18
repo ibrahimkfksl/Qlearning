@@ -48,7 +48,7 @@ class Matrix:
                 elif(x == self.FINISH_X and y == self.FINISH_Y):
                      pygame.draw.rect(SCREEN, self.RED, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
                      pygame.display.flip()
-                elif(self.maze[j][i] == -1):
+                elif(self.maze[j][i] == -2):
                     pygame.draw.rect(SCREEN, self.BLUE, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))
                 else:
                     pygame.draw.rect(SCREEN, self.GREY, pygame.Rect(x, y, (self.X)-2, (self.Y)-1))

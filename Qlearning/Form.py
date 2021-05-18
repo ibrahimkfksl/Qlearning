@@ -34,7 +34,7 @@ maze = Maze(int(size[0]),start,finish)
 
 matrixR=maze.getMatrixR()
 
-RoadFind(matrixR,maze.getFinishState(),iteration=100)
+#RoadFind(matrixR,maze.getFinishState(),iteration=100)
 Matrix(size[0],size[0], start, finish, maze.getMaze())
 
 
