@@ -16,7 +16,7 @@ screen = pygame.display.set_mode((scrx, scry))
 colors = [(51, 51, 51) for i in range(n**2)]
 reward = np.zeros((n, n))
 terminals = []
-penalities = int(n*n*30/100)
+penalities = int(n*n*30/100) 
 
 startsPoint = []
 startsPoint.append(0)
@@ -231,7 +231,7 @@ road=[]
 proabilityRoad=[]
 
 
-while iterasyon<=1:
+while iterasyon<=1000:
     # sleep(0.3)
     screen.fill(background)
     layout()
