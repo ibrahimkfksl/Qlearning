@@ -31,10 +31,9 @@ finish = value[1]
 size = value[2]
 size = size.split(",") #matrix size as array
 maze = Maze(int(size[0]),start,finish)
+# matrixR=maze.getMatrixR()
 
-matrixR=maze.getMatrixR()
-
-RoadFind(matrixR,maze.getFinishState(),iteration=100)
+# #RoadFind(matrixR,maze.getFinishState(),iteration=100)
 Matrix(size[0],size[0], start, finish, maze.getMaze())
 
 

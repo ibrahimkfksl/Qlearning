@@ -24,11 +24,11 @@ class Maze:
             for j in range(0,len(randomArray)):
                 self.maze[i][randomArray[j]]=-1
 
-        # Buradaki dögü kalkacak
-        for i in range(self.maze_size):
-            randomArray=self.randomIndex()
-            for j in range(self.maze_size):
-                self.maze[i][j]=0
+        # # Buradaki dögü kalkacak
+        # for i in range(self.maze_size):
+        #     randomArray=self.randomIndex()
+        #     for j in range(self.maze_size):
+        #         self.maze[i][j]=0
         
         #Matris_R i olusturuyoruz
         for i in range(self.maze_size*self.maze_size):   
