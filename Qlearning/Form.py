@@ -8,6 +8,8 @@ import random
 import matplotlib.pyplot as plt
 import math
 
+from pygame.constants import K_x
+
 class Form:
     def FormPage(self):
         sg.theme('LightGrey 6')     
@@ -40,17 +42,10 @@ size = size.split(",")
 
 
 
-
-
-
-
-
-
-
 # Qlearning #
 n = int(size[0])  # represents no. of side squares(n*n total squares)
-scrx = 700
-scry = 700
+scrx = n*30
+scry = n*30
 x = math.ceil(scrx/int(n))
 
 background = (51, 51, 51)  # used to clear screen while rendering
@@ -62,7 +57,7 @@ colors = [(51, 51, 51) for i in range(n**2)]
 #create reward matrix
 reward = np.zeros((n, n))
 terminals = []
-penalities = int(n*n*30/100)
+penalities = int(n*n*10/100)
 
 startsPoint = []
 startsPoint.append(int(start[0]))
@@ -76,7 +71,7 @@ finishPoint.append(int(finish[1]))
 while penalities != 0:
     i = r(0, n-1)
     j = r(0, n-1)
-    if reward[i, j] == 0 and [i, j] != [int(start[0]), int(start[1])] and [i, j] != [int(finish[0]), int(finish[1])]:
+    if reward[i, j] == 0 and [i, j] != [0, 0] and [i, j] != [n-1, n-1]:
         reward[i, j] = -5
         penalities -= 1
         colors[n*i+j] = (255, 0, 0)
@@ -86,7 +81,7 @@ while penalities != 0:
 reward[int(finish[0]),int(finish[1])] = 5  # finish position
 colors[n*int(finish[0])+int(finish[1])] = (0, 255, 0)
 colors[n*int(start[0])+int(start[1])] = (0, 0, 255)
-terminals.append(n**2 - 1)
+terminals.append(n*(int(finish[0])) + int(finish[1]))
 print(reward)
 
 
@@ -125,19 +120,19 @@ def select_action(current_state):
         if current_pos[0] != 0:  # up
             possible_actions.append(Q[current_state, 0])
         else:
-            possible_actions.append(m - 100)
+            possible_actions.append(m - K_x)
         if current_pos[0] != n-1:  # down
             possible_actions.append(Q[current_state, 1])
         else:
-            possible_actions.append(m - 100)
+            possible_actions.append(m - K_x)
         if current_pos[1] != 0:  # left
             possible_actions.append(Q[current_state, 2])
         else:
-            possible_actions.append(m - 100)
+            possible_actions.append(m - x)
         if current_pos[1] != n-1:  # right
             possible_actions.append(Q[current_state, 3])
         else:
-            possible_actions.append(m - 100)
+            possible_actions.append(m - x)
         action = random.choice([i for i, a in enumerate(possible_actions) if a == max(
             possible_actions)])  # randomly selecting one of all possible actions with maximin value
     return action
@@ -182,13 +177,12 @@ def episode(iterasyon, startPoint, step, cost, epsiodeStep, epsiodeCost,road,pro
         #if reward[road[len(road)-1][0],road[len(road)-1][1]]==5:
         proabilityRoad=road[:]
 
-
         #print(road)
         road.clear()
         cost = 0
         step = 0
-        current_pos[0] = startPoint[0]
-        current_pos[1] = startPoint[1]
+        current_pos[0] = int(start[0])
+        current_pos[1] = int(start[1])
 
         if epsilon > 0.05:
             epsilon -= 3e-4  # reducing as time increases to satisfy Exploration & Exploitation Tradeoff
@@ -199,19 +193,19 @@ def episode(iterasyon, startPoint, step, cost, epsiodeStep, epsiodeCost,road,pro
 def layout(isFinish, probabilityRoad):
     c = 0
     if isFinish == False:
-        for i in range(0, scrx, x):
-            for j in range(0, scry, x):
+        for i in range(0, scrx, 30):
+            for j in range(0, scry, 30):
                 pygame.draw.rect(screen, (255, 255, 255),
-                                (j, i, j+x, i+x), 0)
+                                (j, i, j+30, i+30), 0)
                 pygame.draw.rect(
-                    screen, colors[c], (j+1, i+1, j+x-1, i+x-1), 0)
+                    screen, colors[c], (j+1, i+1, j+28, i+28), 0)
                 c += 1
                 pygame.draw.circle(screen, (25, 129, 230), (
-                    current_pos[1]*x + x/2, current_pos[0]*x + x/2), x*30/100, 0)
+                    current_pos[1]*30 + 14, current_pos[0]*30 + 14), 10, 0)
     else:
         for k in range(0,len(probabilityRoad)-1):
             pygame.draw.circle(screen, (25, 129, 230), (
-                    probabilityRoad[k][1]*x + x/2, probabilityRoad[k][0]*x + x/2), x*30/100, 0)
+                    probabilityRoad[k][1]*30 + 14, probabilityRoad[k][0]*30 + 14), 10, 0)
             pygame.display.flip()
 
 def plot_results(steps, cost):
@@ -281,7 +275,7 @@ road=[]
 proabilityRoad=[]
 
 
-while iterasyon<=100:
+while iterasyon<=500:
     screen.fill(background)
     layout(False, proabilityRoad)
     for event in pygame.event.get():
