@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import math
 
 class Form:
+    #Bilgileri aldigimiz form sayfasi
     def FormPage(self):
         sg.theme('LightGrey 6')     
         layout = [
@@ -29,6 +30,8 @@ class Form:
 form = Form()
 value = form.FormPage()
 
+#yapilan tekrar sayisi
+iterasyon_sayisi=1000
 
 start = value[0]
 start = start.split(",")
@@ -40,22 +43,19 @@ size = size.split(",")
 
 
 
-# Qlearning #
-n = int(size[0])  # represents no. of side squares(n*n total squares)
-scrx = n*30
-scry = n*30
-x = math.ceil(scrx/int(n))
+n = int(size[0])  # n burada labirentin boyutu
+ekranX = n*30
+ekranY = n*30
+x = math.ceil(ekranX/int(n))
 
-background = (0, 0, 0)  # used to clear screen while rendering
-# creating a screen using Pygame
+arkaplan = (0, 0, 0)
 
-screen = pygame.display.set_mode((scrx, scry))
-colors = [(255, 225, 255) for i in range(n**2)]
+ekran = pygame.display.set_mode((ekranX, ekranY))
+renkler = [(255, 225, 255) for i in range(n**2)]
 
-#create reward matrix
-reward = np.zeros((n, n))
-terminals = []
-penalities = int(n*n*20/100)
+matrix_R = np.zeros((n, n))
+engel = []
+engelSayisi = int(n*n*20/100)
 
 startsPoint = []
 startsPoint.append(int(start[0]))
@@ -66,169 +66,166 @@ finishPoint.append(int(finish[0]))
 finishPoint.append(int(finish[1]))
 
 
-while penalities != 0:
+#Engel atamalarini yapiyoruz
+while engelSayisi != 0:
     i = r(0, n-1)
     j = r(0, n-1)
-    if reward[i, j] == 0 and [i, j] != [0, 0] and [i, j] != [n-1, n-1]:
-        reward[i, j] = -5
-        penalities -= 1
-        colors[n*i+j] = (255, 0, 0)
-        terminals.append(n*i+j)
+    if matrix_R[i, j] == 0 and [i, j] != [0, 0] and [i, j] != [n-1, n-1]:
+        matrix_R[i, j] = -5
+        engelSayisi -= 1
+        renkler[n*i+j] = (255, 0, 0)
+        engel.append(n*i+j)
 
 
-reward[int(finish[0]),int(finish[1])] = 5  # finish position
-colors[n*int(finish[0])+int(finish[1])] = (0, 255, 0)
-colors[n*int(start[0])+int(start[1])] = (0, 137, 255)
-terminals.append(n*(int(finish[0])) + int(finish[1]))
-print(reward)
+matrix_R[int(finish[0]),int(finish[1])] = 5  # bitis noktasi
+renkler[n*int(finish[0])+int(finish[1])] = (0, 255, 0)
+renkler[n*int(start[0])+int(start[1])] = (0, 137, 255)
+engel.append(n*(int(finish[0])) + int(finish[1]))
 
 
-Q = np.zeros((n**2, 4))  # Initializing Q-Table
-actions = {"up": 0, "down": 1, "left": 2, "right": 3}  # possible actions
-states = {}
+Q = np.zeros((n**2, 4))  
+hareketler = {"yukari": 0, "asagi": 1, "sol": 2, "sag": 3}  # olasi hareket tanimlamasi
+durumlar = {}
 k = 0
 for i in range(n):
     for j in range(n):
-        states[(i, j)] = k
+        durumlar[(i, j)] = k
         k += 1
 alpha = 0.01
 gamma = 0.9
 
-#start position
-current_pos = [int(start[0]), int(start[1])]
+#baslangic pozisyonu
+bulunan_nokta = [int(start[0]), int(start[1])]
 
 epsilon = 0.25
 
 
-def select_action(current_state):
-    global current_pos, epsilon
-    possible_actions = []
+def durum_sec(bulunan_durum):
+    global bulunan_nokta, epsilon
+    olasi_hareket = []
     if np.random.uniform() <= epsilon:
-        if current_pos[0] != 0:
-            possible_actions.append("up")
-        if current_pos[0] != n-1:
-            possible_actions.append("down")
-        if current_pos[1] != 0:
-            possible_actions.append("left")
-        if current_pos[1] != n-1:
-            possible_actions.append("right")
-        action = actions[possible_actions[r(0, len(possible_actions) - 1)]]
+        if bulunan_nokta[0] != 0:
+            olasi_hareket.append("yukari")
+        if bulunan_nokta[0] != n-1:
+            olasi_hareket.append("asagi")
+        if bulunan_nokta[1] != 0:
+            olasi_hareket.append("sol")
+        if bulunan_nokta[1] != n-1:
+            olasi_hareket.append("sag")
+        hareket = hareketler[olasi_hareket[r(0, len(olasi_hareket) - 1)]]
     else:
-        m = np.min(Q[current_state])
-        if current_pos[0] != 0:  # up
-            possible_actions.append(Q[current_state, 0])
+        m = np.min(Q[bulunan_durum])
+        if bulunan_nokta[0] != 0:  # yukari
+            olasi_hareket.append(Q[bulunan_durum, 0])
         else:
-            possible_actions.append(m - x)
-        if current_pos[0] != n-1:  # down
-            possible_actions.append(Q[current_state, 1])
+            olasi_hareket.append(m - x)
+        if bulunan_nokta[0] != n-1:  # asagi
+            olasi_hareket.append(Q[bulunan_durum, 1])
         else:
-            possible_actions.append(m - x)
-        if current_pos[1] != 0:  # left
-            possible_actions.append(Q[current_state, 2])
+            olasi_hareket.append(m - x)
+        if bulunan_nokta[1] != 0:  # sol
+            olasi_hareket.append(Q[bulunan_durum, 2])
         else:
-            possible_actions.append(m - x)
-        if current_pos[1] != n-1:  # right
-            possible_actions.append(Q[current_state, 3])
+            olasi_hareket.append(m - x)
+        if bulunan_nokta[1] != n-1:  # sag
+            olasi_hareket.append(Q[bulunan_durum, 3])
         else:
-            possible_actions.append(m - x)
-        action = random.choice([i for i, a in enumerate(possible_actions) if a == max(
-            possible_actions)])  # randomly selecting one of all possible actions with maximin value
-    return action
+            olasi_hareket.append(m - x)
+        hareket = random.choice([i for i, a in enumerate(olasi_hareket) if a == max(
+            olasi_hareket)]) 
+    return hareket
 
 
-def episode(iterasyon, startPoint, step, cost, epsiodeStep, epsiodeCost,road,proabilityRoad):
-    global current_pos, epsilon
-    current_state = states[(current_pos[0], current_pos[1])]
-    action = select_action(current_state)
-    if action == 0:  # move up
-        current_pos[0] -= 1
-    elif action == 1:  # move down
-        current_pos[0] += 1
-    elif action == 2:  # move left
-        current_pos[1] -= 1
-    elif action == 3:  # move right
-        current_pos[1] += 1
-    new_state = states[(current_pos[0], current_pos[1])]
-    if new_state not in terminals:
-        Q[current_state, action] += alpha*(reward[current_pos[0], current_pos[1]] + gamma*(
-            np.max(Q[new_state])) - Q[current_state, action])
-        step += 1
-        cost = cost+3
-        road.append([current_pos[0], current_pos[1]])
+#her turdaki tur sayisi
+def tur(iterasyon, startPoint, adim, kazanc, turAdim, turKazanc,yol,olasiYollar):
+    global bulunan_nokta, epsilon
+    bulunan_durum = durumlar[(bulunan_nokta[0], bulunan_nokta[1])]
+    hareket = durum_sec(bulunan_durum)
+    if hareket == 0:  # move yukari
+        bulunan_nokta[0] -= 1
+    elif hareket == 1:  # move asagi
+        bulunan_nokta[0] += 1
+    elif hareket == 2:  # move sol
+        bulunan_nokta[1] -= 1
+    elif hareket == 3:  # move sag
+        bulunan_nokta[1] += 1
+    yeni_durum = durumlar[(bulunan_nokta[0], bulunan_nokta[1])]
+    if yeni_durum not in engel:
+        Q[bulunan_durum, hareket] += alpha*(matrix_R[bulunan_nokta[0], bulunan_nokta[1]] + gamma*(
+            np.max(Q[yeni_durum])) - Q[bulunan_durum, hareket])
+        adim += 1
+        kazanc = kazanc+3
+        yol.append([bulunan_nokta[0], bulunan_nokta[1]])
     else:
-        Q[current_state, action] += alpha * \
-            (reward[current_pos[0], current_pos[1]] - Q[current_state, action])
-        step+=1
-        cost = cost+reward[current_pos[0], current_pos[1]]
-        road.append([current_pos[0], current_pos[1]])
+        Q[bulunan_durum, hareket] += alpha * \
+            (matrix_R[bulunan_nokta[0], bulunan_nokta[1]] - Q[bulunan_durum, hareket])
+        adim+=1
+        kazanc = kazanc+matrix_R[bulunan_nokta[0], bulunan_nokta[1]]
+        yol.append([bulunan_nokta[0], bulunan_nokta[1]])
 
         print(iterasyon, ". iterasyon")
         iterasyon += 1
-        # print(current_pos)
-        # step=round(startsPoint[0]-current_pos[0])+round(startsPoint[1]-current_pos[1])
-        #print("step: ", step)
-        #print("cost: ", cost)
+        
 
-        epsiodeStep.append(step)
-        epsiodeCost.append(cost)
-        proabilityRoad.clear()
-        #if reward[road[len(road)-1][0],road[len(road)-1][1]]==5:
-        proabilityRoad=road[:]
+        turAdim.append(adim)
+        turKazanc.append(kazanc)
+        olasiYollar.clear()
+        olasiYollar=yol[:]
 
-        #print(road)
-        road.clear()
-        cost = 0
-        step = 0
-        current_pos[0] = int(start[0])
-        current_pos[1] = int(start[1])
+      
+        yol.clear()
+        kazanc = 0
+        adim = 0
+        bulunan_nokta[0] = int(start[0])
+        bulunan_nokta[1] = int(start[1])
 
         if epsilon > 0.05:
-            epsilon -= 3e-4  # reducing as time increases to satisfy Exploration & Exploitation Tradeoff
+            epsilon -= 3e-4  
 
-    return iterasyon, step, cost, epsiodeCost, epsiodeStep,road, proabilityRoad
+    return iterasyon, adim, kazanc, turKazanc, turAdim,yol, olasiYollar
 
 
-def layout(isFinish, probabilityRoad):
+def layout(bittMi, olasıYol):
     c = 0
-    if isFinish == False:
-        for i in range(0, scrx, 30):
-            for j in range(0, scry, 30):
-                pygame.draw.rect(screen, (0, 0, 0),
+    if bittMi == False:
+        for i in range(0, ekranX, 30):
+            for j in range(0, ekranY, 30):
+                pygame.draw.rect(ekran, (0, 0, 0),
                                 (j, i, j+30, i+30), 0)
                 pygame.draw.rect(
-                    screen, colors[c], (j+1, i+1, j+28, i+28), 0)
+                    ekran, renkler[c], (j+1, i+1, j+28, i+28), 0)
                 c += 1
-                pygame.draw.circle(screen, (0, 0, 0), (
-                    current_pos[1]*30 + 14, current_pos[0]*30 + 14), 10, 0)
+                pygame.draw.circle(ekran, (0, 0, 0), (
+                    bulunan_nokta[1]*30 + 14, bulunan_nokta[0]*30 + 14), 10, 0)
     else:
-        for k in range(0,len(probabilityRoad)-1):
-            pygame.draw.circle(screen, (0, 0, 0), (
-                    probabilityRoad[k][1]*30 + 14, probabilityRoad[k][0]*30 + 14), 10, 0)
+        for k in range(0,len(olasıYol)-1):
+            pygame.draw.circle(ekran, (0, 0, 0), (
+                    olasıYol[k][1]*30 + 14, olasıYol[k][0]*30 + 14), 10, 0)
             pygame.display.flip()
 
-def plot_results(steps, cost):
-        #
+def grafikCizdir(adimlar, kazanc):
+        
         f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
-        #
-        ax1.plot(np.arange(len(steps)), steps, 'g')
+        
+        ax1.plot(np.arange(len(adimlar)), adimlar, 'g')
         ax1.set_xlabel('Tur')
         ax1.set_ylabel('Adım')
         ax1.set_title('Her Tur için Adım')
 
-        #
-        ax2.plot(np.arange(len(cost)), cost, 'b')
+        
+        ax2.plot(np.arange(len(kazanc)), kazanc, 'b')
         ax2.set_xlabel('Tur')
         ax2.set_ylabel('Kazanç')
         ax2.set_title('Her Tur için Kazanç')
 
-        plt.tight_layout()  # Function to make distance between figures
+        plt.tight_layout()  
 
-        # Showing the plots
+        
         plt.show()
 
 
 def  ciktiVer() :
-    dosya = open('engel.txt', 'w')
+    dosya = open('./engel.txt', 'w')
     dosya.write("S= start point\n")
     dosya.write("F= finish point\n")
     dosya.write("R= road\n")
@@ -240,9 +237,9 @@ def  ciktiVer() :
                 dosya.write("({},{},S)".format(i,j))
             elif i==finishPoint[0] and j==finishPoint[1]:
                 dosya.write("({},{},F)".format(i,j))
-            elif(reward[i][j]==0):
+            elif(matrix_R[i][j]==0):
                 dosya.write("({},{},R)".format(i,j))
-            elif(reward[i][j]==-5):
+            elif(matrix_R[i][j]==-5):
                 dosya.write("({},{},B)".format(i,j))
         dosya.write("\n")
     dosya.close()
@@ -251,28 +248,29 @@ def  ciktiVer() :
 ciktiVer()
 run = True
 iterasyon = 0
-step = 0
-epsiodeStep = []
-cost = 0
-epsiodeCost = []
-road=[]
-proabilityRoad=[]
+adim = 0
+turAdim = []
+kazanc = 0
+turKazanc = []
+yol=[]
+olasiYollar=[]
 
 
-while iterasyon<=1000:
-    screen.fill(background)
-    layout(False, proabilityRoad)
+while iterasyon<=iterasyon_sayisi:
+    #sleep(0.2)
+    ekran.fill(arkaplan)
+    layout(False, olasiYollar)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
     pygame.display.flip()
-    iterasyon, step, cost,epsiodeCost,epsiodeStep,road,proabilityRoad = episode(
-        iterasyon, startsPoint, step, cost, epsiodeStep, epsiodeCost,road,proabilityRoad)
+    iterasyon, adim, kazanc,turKazanc,turAdim,yol,olasiYollar = tur(
+        iterasyon, startsPoint, adim, kazanc, turAdim, turKazanc,yol,olasiYollar)
 
 
-print(proabilityRoad)
-layout(True, proabilityRoad)
-plot_results(epsiodeStep,epsiodeCost)
+print(olasiYollar)
+layout(True, olasiYollar)
+grafikCizdir(turAdim,turKazanc)
 
 
 pygame.quit()
